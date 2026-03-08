@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RAG Simulator</title>
+
+<style>
+
+body{
+font-family: Arial, sans-serif;
+background:#0f172a;
+color:white;
+text-align:center;
+padding:40px;
+}
+
+h1{
+margin-bottom:10px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+}
+
+input{
+width:70%;
+padding:12px;
+border-radius:8px;
+border:none;
+font-size:16px;
+}
+
+button{
+padding:12px 20px;
+border:none;
+border-radius:8px;
+background:#22c55e;
+color:white;
+font-size:16px;
+cursor:pointer;
+margin-left:10px;
+}
+
+.steps{
+margin-top:40px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+}
+
+.step{
+background:#1e293b;
+padding:20px;
+border-radius:12px;
+min-height:120px;
+transition:0.3s;
+}
+
+.active{
+background:#3b82f6;
+}
+
+.output{
+margin-top:40px;
+background:#1e293b;
+padding:20px;
+border-radius:12px;
+}
+
+.doc{
+background:#334155;
+margin:5px;
+padding:6px;
+border-radius:6px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>RAG Simulator</h1>
+<p>See how Retrieval Augmented Generation works</p>
+
+<input id="query" placeholder="Ask a question...">
+<button onclick="startRAG()">Run RAG</button>
+
+<div class="steps">
+
+<div class="step" id="step1">
+<b>1. User Query</b>
+<p id="queryText"></p>
+</div>
+
+<div class="step" id="step2">
+<b>2. Convert to Embedding</b>
+<p id="embedding"></p>
+</div>
+
+<div class="step" id="step3">
+<b>3. Search Vector DB</b>
+<p>Finding similar documents...</p>
+</div>
+
+<div class="step" id="step4">
+<b>4. Retrieved Documents</b>
+<div id="docs"></div>
+</div>
+
+<div class="step" id="step5">
+<b>5. Augment Prompt</b>
+<p id="prompt"></p>
+</div>
+
+<div class="step" id="step6">
+<b>6. LLM Answer</b>
+<p id="answer"></p>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const database = [
+{title:"Doc1",text:"RAG helps AI use external knowledge."},
+{title:"Doc2",text:"Vector databases store embeddings for similarity search."},
+{title:"Doc3",text:"Embeddings convert text into numbers."},
+{title:"Doc4",text:"LLMs generate responses using context."}
+];
+
+function activate(step){
+document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"));
+document.getElementById(step).classList.add("active");
+}
+
+function randomEmbedding(){
+let arr=[];
+for(let i=0;i<5;i++){
+arr.push(Math.random().toFixed(2));
+}
+return arr.join(", ");
+}
+
+function startRAG(){
+
+let query=document.getElementById("query").value;
+
+activate("step1");
+document.getElementById("queryText").innerText=query;
+
+setTimeout(()=>{
+activate("step2");
+document.getElementById("embedding").innerText=randomEmbedding();
+},1000);
+
+setTimeout(()=>{
+activate("step3");
+},2000);
+
+setTimeout(()=>{
+activate("step4");
+
+let docs=document.getElementById("docs");
+docs.innerHTML="";
+
+database.slice(0,2).forEach(d=>{
+let div=document.createElement("div");
+div.className="doc";
+div.innerText=d.text;
+docs.appendChild(div);
+});
+
+},3000);
+
+setTimeout(()=>{
+activate("step5");
+
+let context=database.slice(0,2).map(d=>d.text).join(" ");
+
+document.getElementById("prompt").innerText=
+"Context: "+context+" | Question: "+query;
+
+},4000);
+
+setTimeout(()=>{
+activate("step6");
+
+document.getElementById("answer").innerText=
+"Using retrieved documents, the AI generates an answer related to your query.";
+
+},5000);
+
+}
+
+</script>
+
+</body>
+</html>
